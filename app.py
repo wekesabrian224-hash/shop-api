@@ -81,9 +81,13 @@ def update_product(product_id):
     if product is None:
         return jsonify({'error': 'Product not found'}), 404
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True)
+    problem = validate_product(data, partial=True)
+    if problem:
+        return jsonify({'error': problem}), 400
+
     if 'name' in data:
-        product['name'] = data['name']
+        product['name'] = data['name'].strip()
     if 'price' in data:
         product['price'] = data['price']
     if 'stock' in data:
