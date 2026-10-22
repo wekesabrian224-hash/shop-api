@@ -1,12 +1,11 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
-
-
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///duka.db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='sqlite///duka.db'
-db= SQLAchemy(app)
+db = SQLAlchemy(app)
+
 
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,16 +24,24 @@ class Product(db.Model):
     def __repr__(self):
         return f'<Product {self.id}: {self.name}>'
 
+
+with app.app_context():
+    db.create_all()
+
+
 products = [
     {'id': 1, 'name': 'Headphones', 'price': 2500, 'stock': 10},
     {'id': 2, 'name': 'Phone case', 'price': 600, 'stock': 40},
 ]
+next_id = 3
+
 
 def find_product(product_id):
     for product in products:
         if product['id'] == product_id:
             return product
     return None
+
 
 def validate_product(data, partial=False):
     if not isinstance(data, dict):
@@ -57,6 +64,7 @@ def validate_product(data, partial=False):
 
     return None
 
+
 @app.get('/')
 def home():
     return {'message': 'Welcome to Duka API'}
@@ -65,10 +73,12 @@ def home():
 @app.get('/about')
 def about():
     return {'name': 'Lucky', 'message': 'Learning backend at Moringa'}
-    
+
+
 @app.get('/api/health')
 def health():
     return jsonify({'status': 'ok'}), 200
+
 
 @app.get('/api/products')
 def list_products():
@@ -81,6 +91,7 @@ def get_product(product_id):
     if product is None:
         return jsonify({'error': 'Product not found'}), 404
     return jsonify(product), 200
+
 
 @app.post('/api/products')
 def create_product():
@@ -122,21 +133,20 @@ def update_product(product_id):
     return jsonify(product), 200
 
 
-
 @app.delete('/api/products/<int:product_id>')
 def delete_product(product_id):
     product = find_product(product_id)
     if product is None:
         return jsonify({'error': 'Product not found'}), 404
     products.remove(product)
-    return '', 204    
+    return '', 204
 
 
-@app.errorhandler(404)  #are funvtions that flask runs when a articular error is met 
+@app.errorhandler(404)
 def not_found(error):
     return jsonify({'error': 'Route not found'}), 404
 
 
 @app.errorhandler(405)
 def method_not_allowed(error):
-    return jsonify({'error': 'Method not allowed'}), 405    
+    return jsonify({'error': 'Method not allowed'}), 405
