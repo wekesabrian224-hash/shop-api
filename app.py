@@ -41,7 +41,10 @@ def home():
 @app.get('/about')
 def about():
     return {'name': 'Lucky', 'message': 'Learning backend at Moringa'}
-
+    
+@app.get('/api/health')
+def health():
+    return jsonify({'status': 'ok'}), 200
 
 @app.get('/api/products')
 def list_products():
