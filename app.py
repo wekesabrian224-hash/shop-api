@@ -86,3 +86,13 @@ def delete_product(product_id):
         return jsonify({'error': 'Product not found'}), 404
     products.remove(product)
     return '', 204    
+
+
+@app.errorhandler(404)  #are funvtions that flask runs when a articular error is met 
+def not_found(error):
+    return jsonify({'error': 'Route not found'}), 404
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({'error': 'Method not allowed'}), 405    
