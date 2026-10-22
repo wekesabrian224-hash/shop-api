@@ -6,6 +6,12 @@ products = [
     {'id': 2, 'name': 'Phone case', 'price': 600, 'stock': 40},
 ]
 
+def find_product(product_id):
+    for product in products:
+        if product['id'] == product_id:
+            return product
+    return None
+
 
 @app.get('/')
 def home():
@@ -24,10 +30,10 @@ def list_products():
 
 @app.get('/api/products/<int:product_id>')
 def get_product(product_id):
-    for product in products:
-        if product['id'] == product_id:
-            return jsonify(product), 200
-    return jsonify({'error': 'Product not found'}), 404
+    product = find_product(product_id)
+    if product is None:
+        return jsonify({'error': 'Product not found'}), 404
+    return jsonify(product), 200
 
 @app.post('/api/products')
 def create_product():
