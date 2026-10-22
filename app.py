@@ -31,14 +31,26 @@ def get_product(product_id):
 
 @app.post('/api/products')
 def create_product():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({'error': 'Send a JSON body'}), 400
+
+    name = data.get('name')
+    price = data.get('price')
+    stock = data.get('stock', 0)
+
+    if not isinstance(name, str) or not name.strip():
+        return jsonify({'error': 'name is required'}), 400
+    if not isinstance(price, int) or price <= 0:
+        return jsonify({'error': 'price must be a positive whole number'}), 400
+    if not isinstance(stock, int) or stock < 0:
+        return jsonify({'error': 'stock must be 0 or more'}), 400
+
     product = {
         'id': len(products) + 1,
-        'name': data['name'],
-        'price': data['price'],
-        'stock': data.get('stock', 0),
+        'name': name.strip(),
+        'price': price,
+        'stock': stock,
     }
     products.append(product)
     return jsonify(product), 201
-
-
