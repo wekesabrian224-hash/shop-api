@@ -60,3 +60,19 @@ def create_product():
     }
     products.append(product)
     return jsonify(product), 201
+
+
+@app.patch('/api/products/<int:product_id>')
+def update_product(product_id):
+    product = find_product(product_id)
+    if product is None:
+        return jsonify({'error': 'Product not found'}), 404
+
+    data = request.get_json(silent=True) or {}
+    if 'name' in data:
+        product['name'] = data['name']
+    if 'price' in data:
+        product['price'] = data['price']
+    if 'stock' in data:
+        product['stock'] = data['stock']
+    return jsonify(product), 200
