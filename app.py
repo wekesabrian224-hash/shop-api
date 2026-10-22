@@ -76,3 +76,13 @@ def update_product(product_id):
     if 'stock' in data:
         product['stock'] = data['stock']
     return jsonify(product), 200
+
+
+
+@app.delete('/api/products/<int:product_id>')
+def delete_product(product_id):
+    product = find_product(product_id)
+    if product is None:
+        return jsonify({'error': 'Product not found'}), 404
+    products.remove(product)
+    return '', 204    
