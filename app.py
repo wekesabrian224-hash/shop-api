@@ -47,3 +47,27 @@ def create_category():
     db.session.add(category)
     db.session.commit()
     return jsonify(category.to_dict()), 201
+
+    def check_category(data):
+    if 'category_id' not in data or data['category_id'] is None:
+        return None
+
+    category_id = data['category_id']
+    if isinstance(category_id, bool) or not isinstance(category_id, int):
+        return 'category_id must be a whole number'
+    if db.session.get(Category, category_id) is None:
+        return 'category does not exist'
+    return None
+
+
+
+        problem = validate_product(data) or check_category(data)
+    if problem:
+        return jsonify({'error': problem}), 400
+
+    product = Product(
+        name=data['name'].strip(),
+        price=data['price'],
+        stock=data.get('stock', 0),
+        category_id=data.get('category_id'),
+    )
