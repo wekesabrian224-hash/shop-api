@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///duka.db'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 class Category(db.Model):
@@ -22,7 +24,7 @@ class Product(db.Model):
     price = db.Column(db.Integer, nullable=False)
     stock = db.Column(db.Integer, nullable=False, default=0)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
-
+    description = db.Column(db.String(500), nullable=True)
     def to_dict(self):
         return {
             'id': self.id,
@@ -37,8 +39,6 @@ class Product(db.Model):
         return f'<Product {self.id}: {self.name}>'
 
 
-with app.app_context():
-    db.create_all()
 
 
 def validate_product(data, partial=False):
@@ -59,7 +59,10 @@ def validate_product(data, partial=False):
         stock = data['stock']
         if not isinstance(stock, int) or stock < 0:
             return 'stock must be 0 or more'
-
+    if 'description' in data and data['description'] is not None:
+        description = data['description']
+        if not isinstance(description, str) or len(description) > 500:
+            return 'description must be text of up to 500 characters'
     return None
 
 
@@ -123,6 +126,7 @@ def create_product():
         price=data['price'],
         stock=data.get('stock', 0),
         category_id=data.get('category_id'),
+        description=data.get('description'),
     )
     db.session.add(product)
     db.session.commit()
@@ -146,6 +150,8 @@ def update_product(product_id):
         product.price = data['price']
     if 'stock' in data:
         product.stock = data['stock']
+    if 'description' in data:
+        product.description = data['description']    
     if 'category_id' in data:
         product.category_id = data['category_id']
 

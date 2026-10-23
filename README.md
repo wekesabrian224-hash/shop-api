@@ -12,6 +12,7 @@ It currently stores products in memory, and a database arrives in Week 2.
 3. Install the packages: `pip install -r requirements.txt`
 4. Run the server: `flask --app app run --debug`
 5. Open http://127.0.0.1:5000/
+Create the database tables: `flask --app app db upgrade`
 
 ## Endpoints
 
