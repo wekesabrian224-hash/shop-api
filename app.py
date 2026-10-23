@@ -24,7 +24,7 @@ class Product(db.Model):
     price = db.Column(db.Integer, nullable=False)
     stock = db.Column(db.Integer, nullable=False, default=0)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=True)
-
+    description = db.Column(db.String(500), nullable=True)
     def to_dict(self):
         return {
             'id': self.id,
@@ -59,7 +59,10 @@ def validate_product(data, partial=False):
         stock = data['stock']
         if not isinstance(stock, int) or stock < 0:
             return 'stock must be 0 or more'
-
+    if 'description' in data and data['description'] is not None:
+        description = data['description']
+        if not isinstance(description, str) or len(description) > 500:
+            return 'description must be text of up to 500 characters'
     return None
 
 
@@ -123,6 +126,7 @@ def create_product():
         price=data['price'],
         stock=data.get('stock', 0),
         category_id=data.get('category_id'),
+        description=data.get('description'),
     )
     db.session.add(product)
     db.session.commit()
