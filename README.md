@@ -24,6 +24,8 @@ It currently stores products in memory, and a database arrives in Week 2.
 | POST | `/api/products` | Create a product |
 | PATCH | `/api/products/<id>` | Update a product |
 | DELETE | `/api/products/<id>` | Delete a product |
+| GET | `/api/categories` | List all categories |
+| POST | `/api/categories` | Create a category |
 
 ## Example request
 
