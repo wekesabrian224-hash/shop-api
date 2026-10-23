@@ -150,6 +150,8 @@ def update_product(product_id):
         product.price = data['price']
     if 'stock' in data:
         product.stock = data['stock']
+    if 'description' in data:
+        product.description = data['description']    
     if 'category_id' in data:
         product.category_id = data['category_id']
 
