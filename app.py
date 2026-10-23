@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///duka.db'
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 
 class Category(db.Model):
@@ -37,8 +39,6 @@ class Product(db.Model):
         return f'<Product {self.id}: {self.name}>'
 
 
-with app.app_context():
-    db.create_all()
 
 
 def validate_product(data, partial=False):
